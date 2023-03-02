@@ -19,12 +19,12 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.example.themeapp.view.*
 
-@RequiresApi(Build.VERSION_CODES.O)
+@RequiresApi(Build.VERSION_CODES.Q)
 @Composable
 fun Navigation(navController: NavHostController){
     NavHost(navController = navController, startDestination = Screen.Home.route ){
         composable(route = Screen.Home.route){
-            HomeScreeen( navController = navController)
+           HomeScreeen(navController = navController)
         }
         composable(
             route = Screen.DetailScreen.route + "/{id}",

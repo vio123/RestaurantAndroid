@@ -11,6 +11,9 @@ import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.compose.currentBackStackEntryAsState
 
 sealed class Screen(val title:String="",val icon:ImageVector=Icons.Default.Close,val route:String){
+    object LoginScreen : Screen(route = "loging_screen")
+    object RegisterScreen : Screen(route = "register_screen")
+    object StartScreen : Screen(route = "start_screen")
     object DetailScreen : Screen(route = "detail_screen")
     object Home : Screen(
         route = "home",

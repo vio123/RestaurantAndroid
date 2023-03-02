@@ -14,7 +14,7 @@ import com.example.themeapp.navigation.BottomNavigationScreen
 import com.example.themeapp.navigation.Navigation
 import com.example.themeapp.navigation.Screen
 
-@RequiresApi(Build.VERSION_CODES.O)
+@RequiresApi(Build.VERSION_CODES.Q)
 @Composable
 fun MainScreen(navController: NavController){
     val listItems = listOf(
