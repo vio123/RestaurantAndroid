@@ -33,7 +33,7 @@ class MainActivity : ComponentActivity() {
         lateinit var displayName:String
     }
     @SuppressLint("MissingPermission")
-    @RequiresApi(Build.VERSION_CODES.O)
+    @RequiresApi(Build.VERSION_CODES.Q)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         mainViewModel = _mainViewModel

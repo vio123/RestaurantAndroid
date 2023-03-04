@@ -3,6 +3,7 @@ package com.example.themeapp.activities
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.activity.viewModels
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -27,6 +28,7 @@ import com.example.themeapp.R
 import com.example.themeapp.models.LoginPager
 import com.example.themeapp.navigation.NavigationLogin
 import com.example.themeapp.ui.theme.ThemeAppTheme
+import com.example.themeapp.viewmodels.LoginViewModel
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.PagerState
@@ -40,7 +42,8 @@ class LoginActivity : ComponentActivity() {
             ThemeAppTheme {
                 // A surface container using the 'background' color from the theme
                 val navController = rememberNavController()
-                NavigationLogin(navController = navController)
+                val loginViewModel:LoginViewModel by viewModels()
+                NavigationLogin(navController = navController, viewModel = loginViewModel)
             }
         }
     }
