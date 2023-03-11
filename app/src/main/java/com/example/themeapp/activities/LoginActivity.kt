@@ -23,12 +23,14 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.rememberNavController
 import com.example.themeapp.R
 import com.example.themeapp.models.LoginPager
 import com.example.themeapp.navigation.NavigationLogin
 import com.example.themeapp.ui.theme.ThemeAppTheme
 import com.example.themeapp.viewmodels.LoginViewModel
+import com.example.themeapp.viewmodels.RegisterViewModel
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.PagerState
@@ -43,7 +45,8 @@ class LoginActivity : ComponentActivity() {
                 // A surface container using the 'background' color from the theme
                 val navController = rememberNavController()
                 val loginViewModel:LoginViewModel by viewModels()
-                NavigationLogin(navController = navController, viewModel = loginViewModel)
+                val registerViewModel:RegisterViewModel by viewModels()
+                NavigationLogin(navController = navController, loginViewModel = loginViewModel, registerViewModel = registerViewModel)
             }
         }
     }

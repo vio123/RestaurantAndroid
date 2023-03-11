@@ -1,19 +1,19 @@
 package com.example.themeapp.network
 
-import com.example.themeapp.models.Restaurant
-import com.example.themeapp.models.RestaurantDetails
-import com.example.themeapp.models.Restaurants
-import com.example.themeapp.models.Reviews
+import com.example.themeapp.models.*
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
+import okhttp3.RequestBody
 import retrofit2.Retrofit
 import retrofit2.converter.moshi.MoshiConverterFactory
+import retrofit2.http.Body
 import retrofit2.http.GET
 import retrofit2.http.Header
+import retrofit2.http.POST
 import retrofit2.http.Path
 import retrofit2.http.Query
 
-private const val BASE_URL="https://api.yelp.com/v3/"
+private const val BASE_URL="https://us-central1-nodejs-a0f94.cloudfunctions.net/app/"
 
 // TODO: Build the Moshi object with Kotlin adapter factory that Retrofit will be using to parse JSON
 private val moshi = Moshi.Builder()
@@ -26,6 +26,10 @@ private val retrofit = Retrofit.Builder()
     .build()
 
 interface RestaurantApiService {
+    @POST("api/addUser")
+    suspend fun addUser(
+        @Body requestBody: Utilizator
+    ):Utilizator
     // TODO: Declare a suspended function to get the list of restaurants
     @GET("businesses/search")
     suspend fun getRestaurants(

@@ -9,19 +9,20 @@ import com.example.themeapp.view.LoginScreen
 import com.example.themeapp.view.RegisterScreen
 import com.example.themeapp.view.StartScreen
 import com.example.themeapp.viewmodels.LoginViewModel
+import com.example.themeapp.viewmodels.RegisterViewModel
 
 
 @Composable
-fun NavigationLogin(navController: NavHostController,viewModel: LoginViewModel){
+fun NavigationLogin(navController: NavHostController,loginViewModel: LoginViewModel,registerViewModel: RegisterViewModel){
     NavHost(navController = navController, startDestination = Screen.StartScreen.route){
         composable(route = Screen.StartScreen.route){
             StartScreen(navController)
         }
         composable(route = Screen.LoginScreen.route){
-            LoginScreen(viewModel = viewModel)
+            LoginScreen(viewModel = loginViewModel)
         }
         composable(route = Screen.RegisterScreen.route){
-            RegisterScreen()
+            RegisterScreen(viewModel = registerViewModel)
         }
     }
 }
