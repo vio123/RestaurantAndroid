@@ -35,18 +35,23 @@ import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.PagerState
 import com.google.accompanist.pager.rememberPagerState
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.ktx.auth
+import com.google.firebase.ktx.Firebase
 import kotlinx.coroutines.delay
 
 class LoginActivity : ComponentActivity() {
+     private lateinit var auth: FirebaseAuth
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        auth = Firebase.auth
         setContent {
             ThemeAppTheme {
                 // A surface container using the 'background' color from the theme
                 val navController = rememberNavController()
                 val loginViewModel:LoginViewModel by viewModels()
                 val registerViewModel:RegisterViewModel by viewModels()
-                NavigationLogin(navController = navController, loginViewModel = loginViewModel, registerViewModel = registerViewModel)
+                NavigationLogin(navController = navController, loginViewModel = loginViewModel, registerViewModel = registerViewModel, auth = auth)
             }
         }
     }

@@ -1,5 +1,6 @@
 package com.example.themeapp.view
 
+import android.util.Log
 import android.util.Patterns
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -24,10 +25,12 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
+import com.example.themeapp.activities.LoginActivity
 import com.example.themeapp.viewmodels.LoginViewModel
+import com.google.firebase.auth.FirebaseAuth
 
 @Composable
-fun LoginScreen(viewModel: LoginViewModel){
+fun LoginScreen(viewModel: LoginViewModel,auth:FirebaseAuth){
     val configuration = LocalConfiguration.current
     val screenHeight = configuration.screenHeightDp
     ConstraintLayout(
@@ -114,7 +117,21 @@ fun LoginScreen(viewModel: LoginViewModel){
                 start.linkTo(parent.start)
                 end.linkTo(parent.end)
             },
-            onClick = { /* Perform login */ },
+            onClick = {
+                      auth.signInWithEmailAndPassword(viewModel.email.value,viewModel.pass.value)
+                          .addOnCompleteListener {
+                              if(it.isSuccessful){
+                                  val user = auth.currentUser
+                                  user?.getIdToken(true)?.addOnCompleteListener { tokenTask ->
+                                      if (tokenTask.isSuccessful) {
+                                          val token = tokenTask.result?.token
+                                          // Print the token to the console
+                                          Log.d("test123", "Token: $token")
+                                      }
+                                  }
+                              }
+                          }
+            },
             enabled = isEmailValid && isPasswordValid,
         ) {
             Text(text = "Log in")
