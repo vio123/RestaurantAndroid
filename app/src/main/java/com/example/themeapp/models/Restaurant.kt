@@ -14,7 +14,7 @@ data class Restaurant(
    @Json(name = "rating")
    val rating:Double=0.0,
    @Json(name = "location")
-   val location: Location= Location(emptyList()),
+   val location: Location= Location(),
    @Json(name = "review_count")
    val reviewCount: Int=0,
    @Json(name = "categories")

@@ -42,6 +42,8 @@ class MainViewModel : ViewModel() {
     val statusMap:State<RestaurantApiStatus> = _statusMap
     private val _reviews:MutableState<Reviews> = mutableStateOf(Reviews(reviews = listOf()))
     val reviews:State<Reviews> = _reviews
+    private val _user:MutableState<User> = mutableStateOf(User())
+    val user:State<User> = _user
     private  val _selected:MutableState<String> = mutableStateOf("")
      val selected:State<String> = _selected
     private val token:String ="Bearer 9DTzSDNr_hontOlr8HypqkIhdJcZcGpxPTqHS5v-TgbQ2Z_qW-LdxjsKwnnIOOd8Sks7ttMj9n8AZ_fUtas8VCGrnZ9h3mPF50FgFYm9drVQZcuDBXOCAEQybQzQYnYx"
@@ -55,10 +57,11 @@ class MainViewModel : ViewModel() {
     val searchedRestaurant:State<List<Restaurant>> = _searchedRestaurant
     // TODO: Create properties to represent MutableLiveData and LiveData for a single amphibian object.
     //  This will be used to display the details of an amphibian when a list item is clicked
-    private val _restaurant : MutableState<RestaurantDetails> = mutableStateOf(RestaurantDetails(id = "", name = "",img="", rating = 0.0, location = Location(display_address = emptyList()),isClaimed=false,isClosed=false,phone="",reviewCount=0,categories= emptyList(),coordinates= Coordinates(0.0,0.0),photos= emptyList(), hours = emptyList(), price = ""))
+    private val _restaurant : MutableState<RestaurantDetails> = mutableStateOf(RestaurantDetails(id = "", name = "",img="", rating = 0.0, location = Location(display_address = emptyList()),isClaimed=false, isOpen =false,phone="",reviewCount=0,categories= emptyList(),coordinates= Coordinates(0.0,0.0),photos= emptyList(), open = emptyList(), price = ""))
     val restaurant: State<RestaurantDetails> = _restaurant
 
     val  dialogState:MutableState<Boolean> = mutableStateOf(value = false)
+    val showDialog:MutableState<Boolean> = mutableStateOf(false)
     fun getNearbyRestaurants(searchTerm: String,location: String,latitude:Double,longitude:Double,radius:Int){
         viewModelScope.launch {
             _status.value = RestaurantApiStatus.LOADING
@@ -113,37 +116,34 @@ class MainViewModel : ViewModel() {
     }
 
    @RequiresApi(Build.VERSION_CODES.N)
-   fun getRestaurantList(searchTerm:String, location:String, limit:Int=20) {
-        var lim:Int = limit
-        if(limit<0||limit>50){
-            lim = 20
-        }
+   fun getRestaurantList( location:String,tokenUser:String) {
         viewModelScope.launch {
             _status.value = RestaurantApiStatus.LOADING
 
             try {
                 _selected.value = "best_match"
-                _restaurants.value =RestaurantApi.retrofitService.getRestaurants(token=token, searchTerm = searchTerm, location = location, limit = lim, attributes = "hot_and_new ").restaurant
+                _restaurants.value =RestaurantApi.retrofitService.getRestaurants(token=tokenUser, location = location).restaurant
                 _status.value = RestaurantApiStatus.DONE
                 _searchedRestaurant.value = _restaurants.value
                 sortBestDeals()
             } catch (e1: Exception) {
                 _status.value = RestaurantApiStatus.ERROR
                 _restaurants.value = emptyList()
+                Log.e("test123",e1.toString())
             }
         }
 
     }
-    fun getRestaurantDetail(id:String){
+    fun getRestaurantDetail(id:String,tokenUser: String){
         viewModelScope.launch {
             _statusMap.value = RestaurantApiStatus.LOADING
             try {
-                _restaurant.value = RestaurantApi.retrofitService.getRestaurantDetail(token= token,searchById = id)
+                _restaurant.value = RestaurantApi.retrofitService.getRestaurantDetail(token= tokenUser,searchById = id)
                 _statusMap.value = RestaurantApiStatus.DONE
-                Log.e("price", _restaurant.value.price.toString())
+                Log.e("test123","details")
             }catch (e1:Exception){
                 _statusMap.value = RestaurantApiStatus.ERROR
-                Log.e("test123",e1.toString())
+                Log.e("details",e1.toString())
             }
         }
     }
@@ -174,12 +174,23 @@ class MainViewModel : ViewModel() {
         _selected.value = type
         getRestaurantSorted(searchTerm = searchTerm,location = location,limit = limit, sortBy = type)
     }
-    fun getReviews(id:String){
+    fun getReviews(id:String,tokenUser: String){
         viewModelScope.launch{
             _status.value = RestaurantApiStatus.LOADING
             try{
                 _status.value = RestaurantApiStatus.DONE
-                _reviews.value = RestaurantApi.retrofitService.getRestaurantReviews(token = token, id = id)
+                _reviews.value = RestaurantApi.retrofitService.getRestaurantReviews(token = tokenUser, id = id)
+            }catch (e1:Exception){
+                Log.e("test123",e1.toString())
+            }
+        }
+    }
+    fun getUser(id:String,tokenUser: String){
+        viewModelScope.launch{
+            _status.value = RestaurantApiStatus.LOADING
+            try{
+                _status.value = RestaurantApiStatus.DONE
+                _user.value = RestaurantApi.retrofitService.getUser(token = tokenUser, idUser = id)
             }catch (e1:Exception){
                 Log.e("test123",e1.toString())
             }

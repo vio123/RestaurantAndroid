@@ -3,7 +3,7 @@ package com.example.themeapp.view
 import android.os.Build
 import android.text.method.LinkMovementMethod
 import android.text.util.Linkify
-import android.widget.Space
+import android.util.Log
 import android.widget.TextView
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.Image
@@ -12,28 +12,38 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
+import androidx.compose.ui.window.Dialog
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
 import androidx.core.text.util.LinkifyCompat
 import androidx.navigation.NavController
+import androidx.paging.Pager
 import com.example.themeapp.activities.MainActivity.Companion.mainViewModel
 import com.example.themeapp.viewmodels.RestaurantApiStatus
+import com.google.accompanist.pager.ExperimentalPagerApi
+import com.google.accompanist.pager.HorizontalPager
+import com.google.accompanist.pager.PagerState
+import com.google.accompanist.pager.rememberPagerState
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.ktx.auth
+import com.google.firebase.ktx.Firebase
 import com.google.maps.android.compose.GoogleMap
 import com.google.maps.android.compose.Marker
 import com.google.maps.android.compose.rememberCameraPositionState
@@ -42,16 +52,38 @@ import com.gowtham.ratingbar.RatingBarConfig
 import com.gowtham.ratingbar.RatingBarStyle
 import java.time.DayOfWeek
 import java.time.LocalDateTime
+@OptIn(ExperimentalPagerApi::class)
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun DetailScreenConstraint(id:String,navController: NavController){
-    mainViewModel.getRestaurantDetail(id)
-    mainViewModel.getReviews(id)
+    val alreadyLoaded = remember {
+        mutableStateOf(false)
+    }
+    val token = remember {
+        mutableStateOf("")
+    }
+    val startPage = remember {
+        mutableStateOf(0)
+    }
+    val auth: FirebaseAuth = Firebase.auth
+    val user = auth.currentUser
+    user?.getIdToken(true)?.addOnCompleteListener { tokenTask ->
+        if (tokenTask.isSuccessful && !alreadyLoaded.value) {
+             token.value = tokenTask.result?.token.toString()
+            mainViewModel.getRestaurantDetail(id, tokenUser = token.value)
+            mainViewModel.getReviews(id, tokenUser = token.value)
+            alreadyLoaded.value = true
+            Log.e("test123", mainViewModel.restaurant.value.open.toString())
+        }
+    }
+    if(mainViewModel.showDialog.value){
+        ShowImagePopup( images = mainViewModel.restaurant.value.photos,startPage.value)
+    }
     var address= ""
     var isOpen = false
     try{
         address = mainViewModel.restaurant.value.location?.display_address?.get(0) ?: ""
-        isOpen = mainViewModel.restaurant.value.hours[0].isOpenNow
+        isOpen = mainViewModel.restaurant.value.isOpen
     }catch (e:Exception){
     }
     Surface() {
@@ -262,7 +294,7 @@ fun DetailScreenConstraint(id:String,navController: NavController){
                                     MyContent(text = text)
                                 }
                             }
-                            items(mainViewModel.restaurant.value.hours[0].open) {item ->
+                            items(mainViewModel.restaurant.value.open) {item ->
                                 HourComponent(hour = item, day = item.day, currentDay = dayOfWeek)
                             }
                             item{
@@ -277,7 +309,7 @@ fun DetailScreenConstraint(id:String,navController: NavController){
                             }
                             item {
                                 LazyRow(modifier = Modifier.padding(top = 10.dp)) {
-                                    items(items = mainViewModel.restaurant.value.photos){photo->
+                                    itemsIndexed(items = mainViewModel.restaurant.value.photos){index,photo->
                                         val image = loadPicture(
                                             context = LocalContext.current,
                                             url = photo,
@@ -291,6 +323,10 @@ fun DetailScreenConstraint(id:String,navController: NavController){
                                                 modifier = Modifier
                                                     .fillMaxWidth(0.5f)
                                                     .fillMaxHeight(0.30f)
+                                                    .clickable {
+                                                        mainViewModel.showDialog.value = true
+                                                        startPage.value = index
+                                                    }
                                             )
                                             Spacer(modifier = Modifier.width(16.dp))
                                         }
@@ -308,8 +344,10 @@ fun DetailScreenConstraint(id:String,navController: NavController){
                                 )
                             }
                             items(items = mainViewModel.reviews.value.reviews){review->
-                                ReviewItem(review = review)
+                                mainViewModel.getUser(id = review.id, tokenUser = token.value)
+                                ReviewItem(review = review,user = mainViewModel.user.value)
                             }
+
                         } catch (e: Exception) {
 
                         }
@@ -319,6 +357,55 @@ fun DetailScreenConstraint(id:String,navController: NavController){
         }
     }
 }
+
+@OptIn(ExperimentalPagerApi::class)
+@Composable
+fun ShowImagePopup( images: List<String>,startPage:Int) {
+    val state = rememberPagerState(initialPage = startPage )
+    Dialog(onDismissRequest = { mainViewModel.showDialog.value = false }) {
+                HorizontalPager(
+                    count = images.size,
+                    state = state
+                ) {page ->
+                    val image = loadPicture(
+                        context = LocalContext.current,
+                        url = images[page],
+                        defaultImg = com.example.themeapp.R.drawable.ic_img
+                    ).value
+                    image?.let {
+                        Image(
+                            bitmap = it.asImageBitmap(),
+                            contentDescription = null,
+                            contentScale = ContentScale.FillWidth,
+                            modifier = Modifier.fillMaxSize(0.5f)
+                        )
+                    }
+                }
+                /*
+                Row {
+                    Button(
+                        enabled = selectedImageIndex != 0,
+                        onClick = {
+                        // Show the previous image
+                        selectedImageIndex = (selectedImageIndex - 1).coerceAtLeast(0)
+                    }) {
+                        Text("Previous")
+                    }
+                    Button(
+                        enabled = selectedImageIndex != images.size - 1,
+                        onClick = {
+                        // Show the next image
+                        selectedImageIndex = (selectedImageIndex + 1).coerceAtMost(images.size - 1)
+                    }) {
+                        Text("Next")
+                    }
+                }
+
+                 */
+    }
+}
+
+
 @Composable
 fun MyContent(text:String){
 

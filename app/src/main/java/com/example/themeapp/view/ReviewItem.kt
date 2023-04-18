@@ -20,10 +20,12 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import com.example.themeapp.activities.MainActivity.Companion.mainViewModel
 import com.example.themeapp.models.Review
+import com.example.themeapp.models.User
 
 @Composable
-fun ReviewItem(review: Review){
+fun ReviewItem(review: Review,user: User){
     Card(
         elevation = 40.dp,
         shape = RoundedCornerShape(15.dp),
@@ -36,7 +38,7 @@ fun ReviewItem(review: Review){
             .fillMaxWidth()
             .padding(top = 20.dp, bottom = 20.dp, start = 10.dp)) {
             Row{
-                val image = loadPicture(context = LocalContext.current, url =review.user.imageUrl , defaultImg =com.example.themeapp.R.drawable.ic_img ).value
+                val image = loadPicture(context = LocalContext.current, url = "" , defaultImg =com.example.themeapp.R.drawable.ic_img ).value
                 image?.let {img->
 
                     Image(bitmap = img.asImageBitmap(), contentDescription = null, contentScale = ContentScale.Crop,            // crop the image if it's not a square
@@ -50,12 +52,12 @@ fun ReviewItem(review: Review){
                 Column(modifier = Modifier
                     .fillMaxWidth()
                     .fillMaxHeight()) {
-                    Text(text = review.user.name, fontSize = MaterialTheme.typography.h5.fontSize)
+                    Text(text = user.name, fontSize = MaterialTheme.typography.h5.fontSize)
                     Row() {
-                        Text(text = review.text, fontSize = MaterialTheme.typography.subtitle1.fontSize)
+                        Text(text = review.message, fontSize = MaterialTheme.typography.subtitle1.fontSize)
                     }
                     Row(modifier = Modifier.fillMaxWidth()) {
-                        Text(text = review.timeCreated, fontSize = MaterialTheme.typography.subtitle1.fontSize, modifier = Modifier
+                        Text(text = "", fontSize = MaterialTheme.typography.subtitle1.fontSize, modifier = Modifier
                             .padding(end = 10.dp))
                         Spacer(modifier = Modifier.weight(1f))
                         Text(text = review.rating.toString(), fontSize = MaterialTheme.typography.h6.fontSize, modifier = Modifier

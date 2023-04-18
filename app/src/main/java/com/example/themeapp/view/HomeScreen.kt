@@ -48,6 +48,9 @@ import com.google.accompanist.permissions.MultiplePermissionsState
 import com.google.accompanist.permissions.rememberMultiplePermissionsState
 import com.google.accompanist.permissions.rememberPermissionState
 import com.google.android.gms.location.*
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.ktx.auth
+import com.google.firebase.ktx.Firebase
 import java.util.*
 import java.util.concurrent.TimeUnit
 
@@ -60,6 +63,8 @@ lateinit var multiplePermissionsState: MultiplePermissionsState
 fun HomeScreeen(navController: NavController){
     val context = LocalContext.current
     val navController1 = rememberNavController()
+    val auth:FirebaseAuth = Firebase.auth
+    val user = auth.currentUser
     Surface() {
         when (PackageManager.PERMISSION_GRANTED) {
             ContextCompat.checkSelfPermission(
@@ -84,11 +89,15 @@ fun HomeScreeen(navController: NavController){
                                 val address = geocoder.getFromLocation(location.latitude, location.longitude, 1)
                                 if(MainActivity.mainViewModel.city.value!=address[0].locality){
                                     MainActivity.mainViewModel.city.value = address[0].locality
-                                    MainActivity.mainViewModel.getRestaurantList(
-                                        searchTerm = "food",
-                                        location = MainActivity.mainViewModel.city.value,
-                                        limit = 20
-                                    )
+                                    user?.getIdToken(true)?.addOnCompleteListener { tokenTask ->
+                                        if (tokenTask.isSuccessful) {
+                                            val token = tokenTask.result?.token
+                                            MainActivity.mainViewModel.getRestaurantList(
+                                                location = MainActivity.mainViewModel.city.value,
+                                                tokenUser = token.toString()
+                                            )
+                                        }
+                                    }
                                     MainActivity.mainViewModel.getNearbyRestaurants(
                                         searchTerm = "food",
                                         location = MainActivity.mainViewModel.city.value,

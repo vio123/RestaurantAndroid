@@ -11,8 +11,8 @@ data class RestaurantDetails(
     val img:String = "",
     @Json(name = "is_claimed")
     val isClaimed:Boolean = false,
-    @Json(name = "is_closed")
-    val isClosed:Boolean = false,
+    @Json(name = "is_open_now")
+    val isOpen:Boolean = false,
     @Json(name = "phone")
     val phone:String = "",
     @Json(name = "review_count")
@@ -27,8 +27,8 @@ data class RestaurantDetails(
     val coordinates:Coordinates,
     @Json(name = "photos")
     val photos:List<String> = emptyList(),
-    @Json(name = "hours")
-    val hours:List<Hours> = emptyList(),
+    @Json(name = "open")
+    val open:List<Hour>,
     @Json(name = "price")
     val price:String = ""
 )

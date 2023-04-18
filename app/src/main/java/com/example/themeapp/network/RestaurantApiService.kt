@@ -31,14 +31,18 @@ interface RestaurantApiService {
         @Body requestBody: Utilizator
     ):Utilizator
     // TODO: Declare a suspended function to get the list of restaurants
-    @GET("businesses/search")
+    @GET("api/getRestaurants")
     suspend fun getRestaurants(
-        @Header("Authorization") token:String,
-        @Query("term") searchTerm:String,
+        @Header("authorization") token:String,
         @Query("location") location:String,
-        @Query("limit") limit:Int,
-        @Query("attributes") attributes:String
     ): Restaurants
+
+    @GET("api/{idUser}")
+    suspend fun getUser(
+        @Header("authorization") token: String,
+        @Path("idUser") idUser:String
+    ):User
+
     @GET("businesses/search")
     suspend fun getRestaurantsByFilter(
         @Header("Authorization") token:String,
@@ -47,14 +51,14 @@ interface RestaurantApiService {
         @Query("limit") limit:Int,
         @Query("sort_by") sortBy:String
     ):Restaurants
-    @GET("businesses/{id}")
+    @GET("api/getDetailsRestaurant/{id}")
     suspend fun getRestaurantDetail(
-        @Header("Authorization") token:String,
+        @Header("authorization") token:String,
         @Path("id") searchById:String
     ):RestaurantDetails
-    @GET("businesses/{id}/reviews")
+    @GET("api/{id}/ratings")
     suspend fun getRestaurantReviews(
-        @Header("Authorization") token: String,
+        @Header("authorization") token: String,
         @Path("id") id:String
     ):Reviews
     @GET("businesses/search")
