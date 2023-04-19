@@ -34,6 +34,7 @@ import androidx.core.text.util.LinkifyCompat
 import androidx.navigation.NavController
 import androidx.paging.Pager
 import com.example.themeapp.activities.MainActivity.Companion.mainViewModel
+import com.example.themeapp.models.Reviews
 import com.example.themeapp.viewmodels.RestaurantApiStatus
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
@@ -50,6 +51,8 @@ import com.google.maps.android.compose.rememberCameraPositionState
 import com.gowtham.ratingbar.RatingBar
 import com.gowtham.ratingbar.RatingBarConfig
 import com.gowtham.ratingbar.RatingBarStyle
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import java.time.DayOfWeek
 import java.time.LocalDateTime
 @OptIn(ExperimentalPagerApi::class)
@@ -73,7 +76,6 @@ fun DetailScreenConstraint(id:String,navController: NavController){
             mainViewModel.getRestaurantDetail(id, tokenUser = token.value)
             mainViewModel.getReviews(id, tokenUser = token.value)
             alreadyLoaded.value = true
-            Log.e("test123", mainViewModel.restaurant.value.open.toString())
         }
     }
     if(mainViewModel.showDialog.value){
@@ -157,7 +159,7 @@ fun DetailScreenConstraint(id:String,navController: NavController){
                 )
                 val reviewNumber = createRef()
                 Text(
-                    text = mainViewModel.reviews.value.reviews.size.toString()+" reviews",
+                    text = mainViewModel.reviews.size.toString()+" reviews",
                     fontSize = MaterialTheme.typography.subtitle1.fontSize,
                     color = color,
                     modifier = Modifier.constrainAs(reviewNumber){
@@ -337,13 +339,14 @@ fun DetailScreenConstraint(id:String,navController: NavController){
                                 Spacer(modifier = Modifier
                                     .fillMaxWidth()
                                     .height(10.dp))
+                                AddReview(mainViewModel,token.value,id)
                                 Text(
                                     text = "Reviews",
                                     fontSize = MaterialTheme.typography.h5.fontSize,
                                     fontWeight = FontWeight.Bold,
                                 )
                             }
-                            items(items = mainViewModel.reviews.value.reviews){review->
+                            items(items = mainViewModel.reviews){review->
                                 mainViewModel.getUser(id = review.id, tokenUser = token.value)
                                 ReviewItem(review = review,user = mainViewModel.user.value)
                             }

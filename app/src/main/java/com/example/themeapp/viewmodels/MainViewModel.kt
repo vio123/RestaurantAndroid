@@ -40,8 +40,8 @@ class MainViewModel : ViewModel() {
     private  val mapImg:MutableMap<String,String> = HashMap()
     private val _statusMap:MutableState<RestaurantApiStatus> = mutableStateOf(RestaurantApiStatus.LOADING)
     val statusMap:State<RestaurantApiStatus> = _statusMap
-    private val _reviews:MutableState<Reviews> = mutableStateOf(Reviews(reviews = listOf()))
-    val reviews:State<Reviews> = _reviews
+    private val _reviews = mutableStateListOf<Review>()
+    val reviews get() = _reviews
     private val _user:MutableState<User> = mutableStateOf(User())
     val user:State<User> = _user
     private  val _selected:MutableState<String> = mutableStateOf("")
@@ -62,6 +62,7 @@ class MainViewModel : ViewModel() {
 
     val  dialogState:MutableState<Boolean> = mutableStateOf(value = false)
     val showDialog:MutableState<Boolean> = mutableStateOf(false)
+
     fun getNearbyRestaurants(searchTerm: String,location: String,latitude:Double,longitude:Double,radius:Int){
         viewModelScope.launch {
             _status.value = RestaurantApiStatus.LOADING
@@ -179,7 +180,20 @@ class MainViewModel : ViewModel() {
             _status.value = RestaurantApiStatus.LOADING
             try{
                 _status.value = RestaurantApiStatus.DONE
-                _reviews.value = RestaurantApi.retrofitService.getRestaurantReviews(token = tokenUser, id = id)
+                _reviews.clear()
+                 _reviews.addAll(RestaurantApi.retrofitService.getRestaurantReviews(token = tokenUser, id = id).reviews)
+            }catch (e1:Exception){
+                Log.e("test123",e1.toString())
+            }
+        }
+    }
+    fun addReview(review: Review,tokenUser: String){
+        viewModelScope.launch{
+            _status.value = RestaurantApiStatus.LOADING
+            try{
+                _status.value = RestaurantApiStatus.DONE
+                RestaurantApi.retrofitService.addReview(requestBody = review, token = tokenUser)
+                _reviews.add(review)
             }catch (e1:Exception){
                 Log.e("test123",e1.toString())
             }

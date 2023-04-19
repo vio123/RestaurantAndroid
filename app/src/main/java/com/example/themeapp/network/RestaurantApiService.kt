@@ -29,7 +29,13 @@ interface RestaurantApiService {
     @POST("api/addUser")
     suspend fun addUser(
         @Body requestBody: Utilizator
-    ):Utilizator
+    )
+
+    @POST("api/addReview")
+    suspend fun addReview(
+        @Body requestBody:Review,
+        @Header("authorization") token: String
+    )
     // TODO: Declare a suspended function to get the list of restaurants
     @GET("api/getRestaurants")
     suspend fun getRestaurants(

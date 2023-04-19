@@ -9,4 +9,6 @@ data class Review(
     val rating:Double,
     @Json(name = "message")
     val message:String,
+    @Json(name = "idRestaurant")
+    val idRestaurant:String
 )
