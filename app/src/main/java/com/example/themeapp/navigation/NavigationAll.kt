@@ -5,13 +5,9 @@ import androidx.annotation.RequiresApi
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavController
 import androidx.navigation.NavHostController
-import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import androidx.navigation.navArgument
 import com.example.themeapp.view.AllRestaurants
-import com.example.themeapp.view.DetailScreenConstraint
-import com.example.themeapp.view.HomeScreeen
 import com.example.themeapp.view.LadingScreen
 
 @RequiresApi(Build.VERSION_CODES.O)

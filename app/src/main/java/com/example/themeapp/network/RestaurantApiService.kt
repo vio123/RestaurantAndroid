@@ -36,6 +36,11 @@ interface RestaurantApiService {
         @Body requestBody:Review,
         @Header("authorization") token: String
     )
+    @POST("api/requestReservation")
+    suspend fun requestBooking(
+        @Body requestBody: Booking,
+        @Header("authorization") token: String
+    )
     // TODO: Declare a suspended function to get the list of restaurants
     @GET("api/getRestaurants")
     suspend fun getRestaurants(
