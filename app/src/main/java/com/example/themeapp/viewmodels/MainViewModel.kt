@@ -17,6 +17,7 @@ import com.example.themeapp.network.RestaurantApi
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.maps.model.LatLng
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.util.*
 import kotlin.collections.HashMap
@@ -58,9 +59,7 @@ class MainViewModel : ViewModel() {
     // TODO: Create properties to represent MutableLiveData and LiveData for a single amphibian object.
     //  This will be used to display the details of an amphibian when a list item is clicked
     private val _restaurant : MutableState<RestaurantDetails> = mutableStateOf(RestaurantDetails(id = "", name = "",img="", rating = 0.0, location = Location(display_address = emptyList()),isClaimed=false, isOpen =false,phone="",reviewCount=0,categories= emptyList(),coordinates= Coordinates(0.0,0.0),photos= emptyList(), open = emptyList(), price = ""))
-    val restaurant: State<RestaurantDetails> = _restaurant
-
-    val  dialogState:MutableState<Boolean> = mutableStateOf(value = false)
+    val restaurant get() = _restaurant
     val showDialog:MutableState<Boolean> = mutableStateOf(false)
 
     fun getNearbyRestaurants(searchTerm: String,location: String,latitude:Double,longitude:Double,radius:Int){
@@ -135,13 +134,13 @@ class MainViewModel : ViewModel() {
         }
 
     }
-    fun getRestaurantDetail(id:String,tokenUser: String){
-        viewModelScope.launch {
+    fun getRestaurantDetail(id: String, tokenUser: String) {
+        viewModelScope.launch(Dispatchers.IO) {
             _statusMap.value = RestaurantApiStatus.LOADING
             try {
                 _restaurant.value = RestaurantApi.retrofitService.getRestaurantDetail(token= tokenUser,searchById = id)
                 _statusMap.value = RestaurantApiStatus.DONE
-                Log.e("test123","details")
+                Log.e("test123",_restaurant.value.rating.toString())
             }catch (e1:Exception){
                 _statusMap.value = RestaurantApiStatus.ERROR
                 Log.e("details",e1.toString())
@@ -181,7 +180,7 @@ class MainViewModel : ViewModel() {
             try{
                 _status.value = RestaurantApiStatus.DONE
                 _reviews.clear()
-                 _reviews.addAll(RestaurantApi.retrofitService.getRestaurantReviews(token = tokenUser, id = id).reviews)
+                _reviews.addAll(RestaurantApi.retrofitService.getRestaurantReviews(token = tokenUser, id = id).reviews)
             }catch (e1:Exception){
                 Log.e("test123",e1.toString())
             }

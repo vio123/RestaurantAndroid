@@ -18,6 +18,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.compose.rememberNavController
 import com.example.themeapp.ui.theme.ThemeAppTheme
 import com.example.themeapp.view.MainScreen
+import com.example.themeapp.viewmodels.DetailsRestaurantViewModel
 import com.example.themeapp.viewmodels.MainViewModel
 import com.example.themeapp.viewmodels.RoomViewModel
 import com.google.android.gms.location.FusedLocationProviderClient
@@ -26,17 +27,20 @@ import java.util.*
 
 class MainActivity : ComponentActivity() {
     private val _mainViewModel: MainViewModel by viewModels()
+    private val _restaurantDetailsViewModel: DetailsRestaurantViewModel by viewModels()
     companion object{
         lateinit var mainViewModel:MainViewModel
         lateinit var  profilePictureUrl:String
         lateinit var email :String
         lateinit var displayName:String
+        lateinit var restaurantDetailsViewModel: DetailsRestaurantViewModel
     }
     @SuppressLint("MissingPermission")
     @RequiresApi(Build.VERSION_CODES.Q)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         mainViewModel = _mainViewModel
+        restaurantDetailsViewModel = _restaurantDetailsViewModel
         setContent {
             val navController = rememberNavController()
             ThemeAppTheme(

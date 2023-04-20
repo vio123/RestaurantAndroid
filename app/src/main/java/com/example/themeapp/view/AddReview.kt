@@ -1,5 +1,6 @@
 package com.example.themeapp.view
 
+import android.util.Log
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
@@ -14,13 +15,18 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import com.example.themeapp.activities.MainActivity
+import com.example.themeapp.activities.MainActivity.Companion.mainViewModel
+import com.example.themeapp.activities.MainActivity.Companion.restaurantDetailsViewModel
 import com.example.themeapp.models.Review
 import com.example.themeapp.network.RestaurantApi
 import com.example.themeapp.viewmodels.MainViewModel
 import com.google.firebase.auth.FirebaseAuth
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 @Composable
-fun AddReview(mainViewModel: MainViewModel,tokenUser:String,id:String) {
+fun AddReview(tokenUser:String,id:String) {
     var rating by remember { mutableStateOf(0f) }
     var message by remember { mutableStateOf("") }
     // Valoarea de control pentru resetarea rating-ului
@@ -57,26 +63,29 @@ fun AddReview(mainViewModel: MainViewModel,tokenUser:String,id:String) {
         )
         // Formatare cu o precizie de o zecimală
         val ratingValue = String.format("%.1f", rating.toDouble())
+        val coroutineScope = rememberCoroutineScope()
         // Submit Button
         Button(
             onClick = {
-                mainViewModel.addReview(
+                restaurantDetailsViewModel.addReview(
                     Review(
                         id = FirebaseAuth.getInstance().currentUser?.uid.toString(),
                         rating = ratingValue.toDouble(),
                         message = message,
-                        idRestaurant = mainViewModel.restaurant.value.id
+                        idRestaurant = restaurantDetailsViewModel.restaurant.value.id
                     ), tokenUser = tokenUser
                 )
-                mainViewModel.reviews.add( Review(
+                restaurantDetailsViewModel.reviews.value.add( Review(
                     id = FirebaseAuth.getInstance().currentUser?.uid.toString(),
                     rating = ratingValue.toDouble(),
                     message = message,
-                    idRestaurant = mainViewModel.restaurant.value.id
+                    idRestaurant = restaurantDetailsViewModel.restaurant.value.id
                 ))
-                resetRating.value = true
-                rating = 0f
-                message = ""
+                    //mainViewModel.getRestaurantDetail(id = id, tokenUser = tokenUser)
+                    resetRating.value = true
+                    rating = 0f
+                    message = ""
+
             },
             modifier = Modifier
                 .fillMaxWidth()

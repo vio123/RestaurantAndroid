@@ -36,7 +36,7 @@ fun Navigation(navController: NavHostController){
                 }
             )
         ){entry->
-            DetailScreenConstraint(id = entry.arguments?.getString("id").toString(), navController = navController)
+            DetailScreen(id = entry.arguments?.getString("id").toString(), navController = navController)
         }
         composable(
             route = Screen.Profile.route
