@@ -121,11 +121,15 @@ fun LoginScreen(viewModel: LoginViewModel,auth:FirebaseAuth){
                 end.linkTo(parent.end)
             },
             onClick = {
-                      auth.signInWithEmailAndPassword(viewModel.email.value,viewModel.pass.value)
+                      auth.signInWithEmailAndPassword(viewModel.email.value.trim(),viewModel.pass.value.trim())
                           .addOnCompleteListener {
                               if(it.isSuccessful){
                                   context.startActivity(Intent(context,MainActivity::class.java))
                               }
+                          }
+                          .addOnFailureListener { exception ->
+                              // Aici puteți trata erorile de autentificare
+                              Log.e("test123", "Autentificare eșuată: ${exception.localizedMessage}")
                           }
             },
             enabled = isEmailValid && isPasswordValid,
