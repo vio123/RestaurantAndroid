@@ -17,11 +17,14 @@ import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
 import com.example.themeapp.R
 import com.example.themeapp.ui.theme.ThemeAppTheme
+import com.google.firebase.auth.ktx.auth
+import com.google.firebase.ktx.Firebase
 
 class SplashScreen : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val intent = Intent(this, LoginActivity::class.java)
+        val intentMain = Intent(this,MainActivity::class.java)
         object : CountDownTimer(3000, 1000) {
 
             override fun onTick(millisUntilFinished: Long) {
@@ -30,8 +33,14 @@ class SplashScreen : ComponentActivity() {
 
             override fun onFinish() {
                 Log.e("test123","finished")
-                startActivity(intent)
-                finish()
+                val auth = Firebase.auth
+                if(auth.currentUser != null){
+                    startActivity(intentMain)
+                    finish()
+                }else {
+                    startActivity(intent)
+                    finish()
+                }
             }
         }.start()
         setContent {
