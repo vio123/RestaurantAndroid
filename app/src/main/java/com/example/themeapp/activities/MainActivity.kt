@@ -1,5 +1,6 @@
 package com.example.themeapp.activities
 import android.annotation.SuppressLint
+import android.content.Context
 import android.location.Geocoder
 import android.location.Location
 import android.os.Build
@@ -34,11 +35,13 @@ class MainActivity : ComponentActivity() {
         lateinit var email :String
         lateinit var displayName:String
         lateinit var restaurantDetailsViewModel: DetailsRestaurantViewModel
+        lateinit var context:Context
     }
     @SuppressLint("MissingPermission")
     @RequiresApi(Build.VERSION_CODES.Q)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        context = this
         mainViewModel = _mainViewModel
         restaurantDetailsViewModel = _restaurantDetailsViewModel
         setContent {

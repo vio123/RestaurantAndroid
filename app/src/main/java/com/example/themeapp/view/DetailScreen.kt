@@ -12,7 +12,6 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
@@ -33,6 +32,8 @@ import androidx.navigation.NavController
 import com.example.themeapp.R
 import com.example.themeapp.activities.MainActivity.Companion.mainViewModel
 import com.example.themeapp.activities.MainActivity.Companion.restaurantDetailsViewModel
+import com.example.themeapp.dialogs.BookingRequestStep1
+import com.example.themeapp.navigation.Screen
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.rememberPagerState
@@ -63,7 +64,7 @@ fun DetailScreen(id: String, navController: NavController) {
         mutableStateOf(0)
     }
     // Starea care controlează afișarea sau ascunderea dialogului
-    val showDialog = remember { mutableStateOf(false) }
+    val showDialogReservationStep1 = remember { mutableStateOf(false) }
     val auth: FirebaseAuth = Firebase.auth
     val user = auth.currentUser
     user?.getIdToken(true)?.addOnCompleteListener { tokenTask ->
@@ -82,12 +83,13 @@ fun DetailScreen(id: String, navController: NavController) {
             modifier = Modifier
                 .fillMaxSize()
         ) {
-            if (showDialog.value) {
+            if (showDialogReservationStep1.value) {
                 // Afișează dialogul personalizat
-                CustomDialog(
-                    title = "Titlu dialog",
-                    content = "Conținut dialog",
-                    onDismiss = { showDialog.value = false }
+                BookingRequestStep1(
+                    onDismiss = {
+                        showDialogReservationStep1.value = false
+                        navController.navigate(Screen.MenuScreen.withArgs(id))
+                    }
                 )
             }
             val image = loadPicture(
@@ -234,7 +236,7 @@ fun DetailScreen(id: String, navController: NavController) {
                     Button(
                         modifier = Modifier.fillMaxWidth(),
                         onClick = {
-                            showDialog.value = true
+                            showDialogReservationStep1.value = true
                         }
                     ) {
                         Text(text = "Request table")
@@ -425,32 +427,6 @@ fun ShowImagePopup(images: List<String>, startPage: Int) {
     }
 }
 
-@Composable
-fun CustomDialog(
-    title: String,
-    content: String,
-    onDismiss: () -> Unit
-) {
-    Dialog(onDismissRequest = onDismiss) {
-        Card(
-            modifier = Modifier.padding(10.dp).fillMaxSize(),
-            shape = RoundedCornerShape(8.dp),
-            backgroundColor = Color.White
-        ) {
-            Column(
-                modifier = Modifier.padding(16.dp)
-            ) {
-                Text(text = title, style = MaterialTheme.typography.h6)
-                Spacer(modifier = Modifier.height(16.dp))
-                Text(text = content, style = MaterialTheme.typography.body1)
-                Spacer(modifier = Modifier.height(16.dp))
-                Button(onClick = onDismiss) {
-                    Text(text = "OK")
-                }
-            }
-        }
-    }
-}
 
 
 

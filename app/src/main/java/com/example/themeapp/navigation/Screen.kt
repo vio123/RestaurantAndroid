@@ -15,6 +15,8 @@ sealed class Screen(val title:String="",val icon:ImageVector=Icons.Default.Close
     object RegisterScreen : Screen(route = "register_screen")
     object StartScreen : Screen(route = "start_screen")
     object DetailScreen : Screen(route = "detail_screen")
+
+    object MenuScreen : Screen(route = "menu_screen")
     object Home : Screen(
         route = "home",
         title = "Home",

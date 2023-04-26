@@ -39,6 +39,18 @@ fun Navigation(navController: NavHostController){
             DetailScreen(id = entry.arguments?.getString("id").toString(), navController = navController)
         }
         composable(
+            route = Screen.MenuScreen.route + "/{id}",
+            arguments = listOf(
+                navArgument("id"){
+                    type = NavType.StringType
+                    defaultValue = "asd"
+                    nullable = true
+                }
+            )
+        ){entry ->
+            MenuScreen(id = entry.arguments?.getString("id").toString(), navController = navController)
+        }
+        composable(
             route = Screen.Profile.route
         ){
             ProfileScreen(navController = navController)

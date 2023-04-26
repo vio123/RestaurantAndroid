@@ -25,6 +25,9 @@ class DetailsRestaurantViewModel : ViewModel() {
     private val _statusMap:MutableState<RestaurantApiStatus> = mutableStateOf(RestaurantApiStatus.LOADING)
     val statusMap: State<RestaurantApiStatus> = _statusMap
     val showDialog:MutableState<Boolean> = mutableStateOf(false)
+    val date = mutableStateOf("")
+    val time = mutableStateOf("")
+    val selectedIndex = mutableStateOf(0)
     fun getRestaurantDetail(id: String, tokenUser: String) {
         viewModelScope.launch(Dispatchers.IO) {
             _statusMap.value = RestaurantApiStatus.LOADING
